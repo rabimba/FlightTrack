@@ -1,0 +1,161 @@
+
+<html>
+  <head>
+
+    <link rel="icon" type="image/png" href="/static/images/structure/favicon.png">
+    
+	<title>Realtime Flight Tracking Map - EON Realtime Dashboards</title>
+
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,700,700italic,900,900italic,300italic,300' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300,100' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="bootstrap.min.css">
+	<link rel="stylesheet" href="font-awesome.css">
+	<link id="theme-style" rel="stylesheet" href="styles.css">
+
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/tomorrow.min.css"></link>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+
+	<style>
+	body {
+		margin: 0;
+		/*padding: 0px 100px;*/
+	}
+	.map {
+		width: 100%;
+		height: 500px;
+	}
+	.map, #chart {
+		margin-top: 60px;
+		margin-bottom: 40px;
+	}
+	p, iframe, h1,h2,h3,h4,h5,h6,p,.map {
+		margin: 20px 0px;
+	}
+	h1 {
+		margin-top: 0px;
+	}
+	.about p {
+		opacity: .7;
+	}
+	.about {
+		border-bottom: 1px solid #efefef;
+	}
+	</style>
+
+
+
+
+	<script type="text/javascript" src="eon.js"></script>
+	<link type="text/css" rel="stylesheet" href="eon.css" />
+
+
+
+  </head>
+  <body>
+
+	<div class="container">
+
+		
+		<div class="row">
+			<div class="col-md-12">
+
+			  	<div class="about">
+			  		<h1>Realtime Flight Tracking Map kinda 4 PK</h1>
+			  		<p>Mapbox powered tracking of flights in and out of SFO airport in San Francisco, California.</p>
+			  	</div>
+			</div>
+
+	  	</div><div class="row">
+
+  <div class="col-md-12">
+
+    <div id='map' class="map"></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  L.RotatedMarker = L.Marker.extend({
+    options: { angle: 0 },
+    _setPos: function(pos) {
+      L.Marker.prototype._setPos.call(this, pos);
+      if (L.DomUtil.TRANSFORM) {
+        // use the CSS transform rule if available
+        this._icon.style[L.DomUtil.TRANSFORM] += ' rotate(' + this.options.angle + 'deg)';
+      } else if (L.Browser.ie) {
+        // fallback for IE6, IE7, IE8
+        var rad = this.options.angle * L.LatLng.DEG_TO_RAD,
+        costheta = Math.cos(rad),
+        sintheta = Math.sin(rad);
+        this._icon.style.filter += ' progid:DXImageTransform.Microsoft.Matrix(sizingMethod=\'auto expand\', M11=' +
+          costheta + ', M12=' + (-sintheta) + ', M21=' + sintheta + ', M22=' + costheta + ')';
+      }
+
+    }
+  });
+
+  var map = eon.map({
+    id: 'map',
+    mb_id: 'ianjennings.lec06po7',
+    mb_token: 'pk.eyJ1IjoiaWFuamVubmluZ3MiLCJhIjoiZExwb0p5WSJ9.XLi48h-NOyJOCJuu1-h-Jg',
+    channel: 'sfo-flight-data',
+    rotate: true,
+    history: true,
+    marker: function (latlng, data) {
+
+      var marker = new L.RotatedMarker(latlng, {
+        icon: L.icon({
+          iconUrl: 'https://www.mapbox.com/maki/renders/airport-24@2x.png',
+          iconSize: [24, 24]
+        })
+      });
+
+      var popup = '';
+      if(data[13]) {
+        popup = 'Flight <strong>' + data[13] + '</strong>';
+      }
+      if(data[11]) {
+        if(!popup.length) {
+          popup = 'Flight from ' + data[11];
+        } else {
+          popup += ' from ' + data[11];
+        }
+      }
+      if(data[12]) {
+        if(!popup.length) {
+          popup = 'Flight to ' + data[11];
+        } else {
+          popup += ' to ' + data[11];
+        }
+      }
+      if(!popup.length) {
+        var popup = 'No data available';
+      }
+
+      marker.bindPopup(popup);
+
+      return marker;
+    }
+  });
+</script>
+
+  	</div>
+
+  	<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-16927549-1', 'auto');
+    ga('send', 'pageview');
+
+	hljs.initHighlightingOnLoad();
+
+  </script>
+
+  </body>
+</html>
